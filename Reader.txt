@@ -1,0 +1,7 @@
+########### to create table for message in supabase###########
+create table messages (
+  id uuid primary key default uuid_generate_v4(),
+  content text,
+  user_id uuid references auth.users(id),
+  created_at timestamp default now()
+);
