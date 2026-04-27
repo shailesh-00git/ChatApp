@@ -3,6 +3,7 @@ import * as React from "react";
 import { useEffect, useState, useRef } from "react";
 import { supabase } from "../../../lib/supabase";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export default function RoomPage({ params }) {
   const router = useRouter();
@@ -12,18 +13,19 @@ export default function RoomPage({ params }) {
   const [room, setRoom] = useState(null);
   const [members, setMembers] = useState([]);
   const [text, setText] = useState("");
-  const [showNamePrompt, setShowNamePrompt] = useState(false);
+  const [showNamePrompt, setShowNamePrompt] = useState(() => {
+    if (typeof window !== "undefined") {
+      const stored = localStorage.getItem("chat_username");
+      return !stored;
+    }
+    return true;
+  });
   const [tempUsername, setTempUsername] = useState("");
 
   const bottomRef = useRef(null);
 
   const username =
     typeof window !== "undefined" ? localStorage.getItem("chat_username") : "";
-
-  // ================= CHECK USERNAME =================
-  useEffect(() => {
-    if (!username) setShowNamePrompt(true);
-  }, [username]);
 
   // ================= SAVE USERNAME =================
   const saveUsername = (e) => {
@@ -132,7 +134,7 @@ export default function RoomPage({ params }) {
   // ================= COPY LINK =================
   const copyRoomLink = () => {
     navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-    alert("Room link copied!");
+    toast.success("link copied");
   };
 
   // ================= LEAVE CHAT =================
