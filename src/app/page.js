@@ -21,22 +21,24 @@ export default function Home() {
       <div className="bg-white w-full max-w-xl p-8 md:p-12 rounded-[2.5rem] shadow-xl shadow-slate-200/60 border border-slate-100 text-center animate-in fade-in zoom-in duration-500">
         <div className="space-y-8">
           <div className="space-y-2">
-            <h2 className="text-2xl font-bold text-slate-800">Ready to start?</h2>
+            <h2 className="text-2xl font-bold text-slate-800">
+              Ready to start?
+            </h2>
             <p className="text-slate-500 text-sm">
               Create a private space or join your friends using a room ID.
             </p>
           </div>
 
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Link 
-              href="/create" 
+            <Link
+              href="/create"
               className="w-full sm:w-auto bg-[#7ce7b7] hover:bg-[#66d1a1] text-slate-800 font-bold px-10 py-4 rounded-2xl shadow-lg shadow-[#7ce7b7]/30 transition-all hover:-translate-y-1 active:scale-95"
             >
               Create Room
             </Link>
-            
-            <Link 
-              href="/join" 
+
+            <Link
+              href="/join"
               className="w-full sm:w-auto border-2 border-slate-100 hover:border-slate-200 hover:bg-slate-50 text-slate-600 font-bold px-10 py-4 rounded-2xl transition-all active:scale-95"
             >
               Join Room

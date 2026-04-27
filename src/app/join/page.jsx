@@ -40,7 +40,7 @@ export default function JoinPage() {
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
               <div>
                 <h2 className="text-3xl font-black text-slate-800 tracking-tight">
-                  Available Rooms
+                  Available <span className="text-[#4ade80]">Rooms</span>
                 </h2>
                 <p className="text-slate-500 text-sm mt-1 font-medium">
                   Select a space to start chatting
