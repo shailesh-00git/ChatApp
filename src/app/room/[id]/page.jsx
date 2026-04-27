@@ -33,7 +33,7 @@ export default function RoomPage({ params }) {
     if (!tempUsername.trim()) return;
 
     localStorage.setItem("chat_username", tempUsername);
-    window.location.reload();
+    setShowNamePrompt(false);
   };
 
   // ================= LOAD DATA =================
@@ -131,28 +131,25 @@ export default function RoomPage({ params }) {
     }
   };
 
-  // ================= COPY LINK =================
-  const copyRoomLink = () => {
-    navigator.clipboard.writeText(`${window.location.origin}/room/${roomId}`);
-    toast.success("link copied");
+  // ================= COPY CODE (FIXED) =================
+  const copyRoomCode = () => {
+    // Copy the 6-digit room_code from the DB instead of the UUID
+    if (room?.room_code) {
+      navigator.clipboard.writeText(room.room_code);
+      toast.success("Room code copied!");
+    }
   };
 
   // ================= LEAVE CHAT =================
-  const leaveChat = async () => {
-    await supabase
-      .from("messages")
-      .delete()
-      .eq("room_id", roomId)
-      .eq("username", username);
-
+  const leaveChat = () => {
     localStorage.removeItem("chat_username");
     router.push("/");
   };
 
   return (
-    <main className="h-screen flex bg-[#f8fafc] text-slate-800 font-sans p-4 gap-4 overflow-hidden">
+    <main className="h-screen flex bg-[#f8fafc] text-slate-800 font-sans p-2 md:p-4 gap-4 overflow-hidden">
       {/* SIDEBAR */}
-      <div className="hidden md:flex flex-col w-72 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
+      <div className="hidden lg:flex flex-col w-72 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
           <h2 className="font-bold text-lg text-slate-800">Members</h2>
           <p className="text-xs text-slate-500 uppercase tracking-wider font-semibold mt-1">
@@ -166,14 +163,9 @@ export default function RoomPage({ params }) {
               className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors"
             >
               <div className="w-8 h-8 rounded-full bg-[#7ce7b7] flex items-center justify-center text-xs font-bold text-slate-700">
-                {member.charAt(0).toUpperCase()}
+                {member?.charAt(0).toUpperCase()}
               </div>
               <span className="text-sm font-medium">{member}</span>
-              {member === username && (
-                <span className="text-[10px] bg-slate-100 px-1.5 py-0.5 rounded text-slate-500 italic">
-                  Me
-                </span>
-              )}
             </div>
           ))}
         </div>
@@ -182,24 +174,20 @@ export default function RoomPage({ params }) {
       {/* CHAT SECTION */}
       <div className="flex-1 flex flex-col bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         {/* HEADER */}
-        <header className="px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/80 backdrop-blur-md">
+        <header className="px-4 md:px-6 py-4 border-b border-slate-100 flex justify-between items-center bg-white/80 backdrop-blur-md">
           <div className="flex flex-col">
-            <h1 className="font-bold text-xl flex items-center gap-2">
+            <h1 className="font-bold text-lg md:text-xl flex items-center gap-2">
               <span className="text-[#4ade80]">#</span>{" "}
               {room?.name || "Loading..."}
             </h1>
-            <p className="text-xs text-slate-400">
-              Created by {room?.created_by}
-            </p>
           </div>
 
-          <div className="flex gap-2">
-            <button
-              onClick={copyRoomLink}
-              className="flex items-center gap-2 px-4 py-2 rounded-xl text-sm font-semibold transition-all hover:bg-slate-100 active:scale-95"
-            >
-              Invite
-            </button>
+          <div className="flex gap-5 items-center">
+            <div className="text-2xl">
+              <p className="font-semibold tracking-[4]  text-[#2d7a5d]">
+                {room?.room_code}
+              </p>
+            </div>
             <button
               onClick={leaveChat}
               className="px-4 py-2 rounded-xl text-sm font-semibold text-white bg-rose-500 hover:bg-rose-600 shadow-md shadow-rose-100 transition-all active:scale-95"
@@ -209,17 +197,16 @@ export default function RoomPage({ params }) {
           </div>
         </header>
 
-        {/* MESSAGES */}
-        <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-slate-50/30">
+        {/* MESSAGES AREA */}
+        <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-4 bg-slate-50/30">
           {messages.map((m) => {
             const isOwn = m.username === username;
-
             return (
               <div
                 key={m.id}
                 className={`flex w-full ${isOwn ? "justify-end" : "justify-start"}`}
               >
-                <div className={`max-w-[70%] group`}>
+                <div className="max-w-[85%] md:max-w-[70%]">
                   {!isOwn && (
                     <span className="text-[11px] font-bold text-slate-500 ml-2 mb-1 block">
                       {m.username}
@@ -230,11 +217,13 @@ export default function RoomPage({ params }) {
                       isOwn
                         ? "bg-[#7ce7b7] text-slate-800 rounded-tr-none"
                         : "bg-white border border-slate-100 text-slate-700 rounded-tl-none"
-                    } ${m.pending ? "animate-pulse grayscale" : ""}`}
+                    } ${m.pending ? "animate-pulse opacity-70" : ""}`}
                   >
-                    <p className="text-sm leading-relaxed">{m.content}</p>
+                    <p className="text-sm leading-relaxed break-words">
+                      {m.content}
+                    </p>
                     <div
-                      className={`text-[9px] mt-1 opacity-60 flex ${isOwn ? "justify-end" : "justify-start"}`}
+                      className={`text-[9px] mt-1 opacity-50 flex ${isOwn ? "justify-end" : "justify-start"}`}
                     >
                       {new Date(m.created_at).toLocaleTimeString([], {
                         hour: "2-digit",
@@ -249,7 +238,7 @@ export default function RoomPage({ params }) {
           <div ref={bottomRef} />
         </div>
 
-        {/* INPUT */}
+        {/* INPUT BOX */}
         <footer className="p-4 bg-white border-t border-slate-100">
           <form
             onSubmit={send}
@@ -271,24 +260,26 @@ export default function RoomPage({ params }) {
         </footer>
       </div>
 
-      {/* USERNAME MODAL (Name Prompt) */}
+      {/* USERNAME MODAL */}
       {showNamePrompt && (
         <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
           <div className="bg-white rounded-3xl p-8 w-full max-w-md shadow-2xl animate-in fade-in zoom-in duration-300">
-            <h2 className="text-2xl font-bold mb-2">Welcome to the Room</h2>
+            <h2 className="text-2xl font-bold mb-2">Almost there!</h2>
             <p className="text-slate-500 mb-6">
-              Choose a username to join the conversation.
+              You're entering{" "}
+              <span className="font-bold text-slate-800">{room?.name}</span>.
+              What should we call you?
             </p>
             <form onSubmit={saveUsername} className="space-y-4">
               <input
                 autoFocus
                 className="w-full border border-slate-200 rounded-2xl px-5 py-4 outline-none focus:ring-2 focus:ring-[#7ce7b7] transition-all bg-slate-50"
-                placeholder="Your name..."
+                placeholder="Enter your name..."
                 value={tempUsername}
                 onChange={(e) => setTempUsername(e.target.value)}
               />
               <button className="w-full bg-[#7ce7b7] text-slate-800 font-bold py-4 rounded-2xl hover:bg-[#66d1a1] transition-all shadow-lg shadow-[#7ce7b7]/20">
-                Start Chatting
+                Enter Room
               </button>
             </form>
           </div>
