@@ -12,8 +12,16 @@ export default function JoinPage() {
   const [username, setUsername] = useState("");
   const [loading, setLoading] = useState(true);
   const [joining, setJoining] = useState(false);
+  const [currentUser, setCurrentUser] = useState(null);
   const router = useRouter();
 
+  // Read username from localStorage after mount
+  useEffect(() => {
+    const stored = localStorage.getItem("chat_username");
+    setCurrentUser(stored);
+  }, []);
+
+  // Fetch rooms
   useEffect(() => {
     const fetchRooms = async () => {
       setLoading(true);
@@ -28,12 +36,37 @@ export default function JoinPage() {
     fetchRooms();
   }, []);
 
+  // ── Room card click ──
+  const handleRoomClick = (room) => {
+    // Always read fresh at click time
+    const user = localStorage.getItem("chat_username");
+
+    console.log("👤 currentUser:", user);
+    console.log("🏠 room.created_by:", room.created_by);
+
+    if (!user) {
+      // No username yet → show username step
+      setSelectedRoom(room);
+      return;
+    }
+
+    if (user === room.created_by) {
+      // Creator → enter directly
+      toast.success(`Welcome back to ${room.name}!`);
+      router.push(`/room/${room.id}`);
+    } else {
+      // Not creator → block
+      toast.error("Only the room creator can join directly. Use a room code.");
+    }
+  };
+
+  // ── Verify code ──
   const handleVerifyCode = async (e) => {
     e.preventDefault();
     const cleanCode = roomCode.trim().toUpperCase();
 
     if (cleanCode.length < 6) {
-      toast.error("Please enter a 6-digit code");
+      toast.error("Please enter a 6-character code");
       return;
     }
 
@@ -48,29 +81,30 @@ export default function JoinPage() {
 
       if (error || !data) {
         toast.error("Invalid Room Code. Please check and try again.");
-        setJoining(false);
       } else {
         setSelectedRoom(data);
-        setJoining(false);
         toast.success(`Room "${data.name}" found!`);
       }
     } catch (err) {
       console.error(err);
+    } finally {
       setJoining(false);
     }
   };
 
+  // ── Join with username ──
   const joinRoom = () => {
     if (!username.trim()) {
       toast.error("Please enter a username");
       return;
     }
-    localStorage.setItem("chat_username", username);
+    localStorage.setItem("chat_username", username.trim());
+    setCurrentUser(username.trim());
     router.push(`/room/${selectedRoom.id}`);
   };
 
   return (
-    <main className="min-h-dvh flex flex-col items-center justify-center bg-[#f8fafc] p-3 sm:p-4 md:p-8 relative overflow-hidden">
+    <main className="max-h-dvh flex flex-col items-center justify-center bg-[#f8fafc] p-3 sm:p-4 md:p-8 relative overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-linear-to-b from-[#7ce7b7]/10 to-transparent blur-3xl -z-10" />
 
@@ -86,7 +120,7 @@ export default function JoinPage() {
             </p>
           </div>
           <Link href={"/"}>
-            <button className="flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold py-2 px-3 sm:px-4 rounded-xl hover:bg-slate-50 transition-all text-md">
+            <button className="flex items-center gap-1 text-slate-600 hover:text-slate-900 font-bold py-2 px-3 sm:px-4 rounded-xl hover:bg-slate-50 transition-all text-sm">
               &larr; <span className="hidden sm:inline">Back Home</span>
               <span className="sm:hidden">Back</span>
             </button>
@@ -95,8 +129,8 @@ export default function JoinPage() {
 
         {!selectedRoom ? (
           <>
-            {/* JOIN BY CODE SECTION */}
-            <div className="mb-6 sm:mb-10 p-5 sm:p-8 bg-slate-50 rounded-2xl sm:rounded-r-4xl border border-slate-100 flex flex-col items-center text-center">
+            {/* JOIN BY CODE */}
+            <div className="mb-6 sm:mb-10 p-5 sm:p-8 bg-slate-50 rounded-2xl sm:rounded-4xl border border-slate-100 flex flex-col items-center text-center">
               <h2 className="text-lg sm:text-2xl font-black text-slate-800 mb-1 sm:mb-2">
                 Join with Code
               </h2>
@@ -143,21 +177,36 @@ export default function JoinPage() {
                     "from-rose-50 to-rose-100/50 text-rose-700 border-rose-200",
                   ];
 
+                  const isCreator =
+                    currentUser &&
+                    room.created_by &&
+                    currentUser === room.created_by;
+
                   return (
                     <div
                       key={room.id}
-                      className={`p-4 sm:p-6 rounded-2xl sm:rounded-3xl border bg-linear-to-br transition-all hover:shadow-md ${
+                      onClick={() => handleRoomClick(room)}
+                      className={`relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl border bg-linear-to-br transition-all hover:shadow-md cursor-pointer select-none active:scale-95 ${
                         colors[index % colors.length]
-                      }`}
+                      } ${isCreator ? "ring-2 ring-[#7ce7b7] ring-offset-1" : ""}`}
                     >
+                      {/* Creator badge */}
+                      {isCreator && (
+                        <span className="absolute top-2 right-2 sm:top-3 sm:right-3 text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-[#7ce7b7] text-slate-700 px-1.5 py-0.5 rounded-full shadow-sm">
+                          Your Room
+                        </span>
+                      )}
+
                       <div className="bg-white/50 w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center mb-2 sm:mb-3 shadow-sm">
                         <span className="text-sm sm:text-lg font-bold">#</span>
                       </div>
-                      <h3 className="font-bold text-sm sm:text-lg truncate mb-1">
+
+                      <h3 className="font-bold text-sm sm:text-lg truncate mb-1 pr-12">
                         {room.name}
                       </h3>
+
                       <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest opacity-60">
-                        Code Required
+                        {isCreator ? "✓ Tap to Enter" : "Code Required"}
                       </p>
                     </div>
                   );
@@ -191,6 +240,7 @@ export default function JoinPage() {
                 placeholder="What's your name?"
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
+                onKeyDown={(e) => e.key === "Enter" && joinRoom()}
               />
 
               <button

@@ -198,7 +198,7 @@ export default function RoomPage({ params }) {
   };
 
   return (
-    <main className="h-screen flex bg-[#f8fafc] text-slate-800 font-sans p-2 sm:p-3 md:p-4 gap-3 md:gap-4 overflow-hidden">
+    <main className="h-dvh flex bg-[#f8fafc] text-slate-800 font-sans p-2 sm:p-3 md:p-4 gap-3 md:gap-4 overflow-hidden">
       {/* SIDEBAR — desktop only */}
       <div className="hidden lg:flex flex-col w-72 bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="p-6 border-b border-slate-100 bg-slate-50/50">
@@ -391,7 +391,7 @@ export default function RoomPage({ params }) {
               Almost there!
             </h2>
             <p className="text-slate-500 text-sm sm:text-base mb-5 sm:mb-6">
-              You're entering{" "}
+              You&apos;re entering{" "}
               <span className="font-bold text-slate-800">{room?.name}</span>.
               What should we call you?
             </p>
