@@ -3,9 +3,9 @@ import Link from "next/link";
 
 export default function Home() {
   return (
-    <main className="min-h-screen flex flex-col items-center justify-center bg-[#f8fafc] p-6">
+    <main className="min-h-dvh flex flex-col items-center justify-center bg-[#f8fafc] p-6">
       {/* GLOW DECORATION */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-gradient-to-b from-[#7ce7b7]/20 to-transparent blur-3xl -z-10" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-linear-to-b from-[#7ce7b7]/20 to-transparent blur-3xl -z-10" />
 
       {/* HEADER / LOGO SECTION */}
       <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
@@ -47,7 +47,7 @@ export default function Home() {
         </div>
 
         {/* FOOTER INFO */}
-        <div className="mt-10 pt-8 border-t border-slate-50 flex justify-center gap-8 text-slate-400 text-xs font-semibold uppercase tracking-widest">
+        <div className="mt-10 pt-8 border-t border-slate-50 flex justify-center md:gap-8 gap-3 text-slate-400 md:text-xs font-semibold uppercase tracking-widest  text-[11px]">
           <div className="flex items-center gap-2">
             <div className="w-2 h-2 rounded-full bg-[#7ce7b7]" />
             Real-time

@@ -97,7 +97,7 @@ export default function CreatePage() {
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-2">Room Name</label>
             <input
-              placeholder="e.g. Design Team"
+              placeholder="room name"
               onChange={(e) => setRoomName(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-4 focus:ring-[#7ce7b7]/20 focus:border-[#7ce7b7] transition-all text-lg"
             />
@@ -106,7 +106,7 @@ export default function CreatePage() {
           <div className="space-y-2">
             <label className="text-xs font-bold uppercase tracking-widest text-slate-400 ml-2">Your Username</label>
             <input
-              placeholder="e.g. Alex"
+              placeholder="your name"
               onChange={(e) => setUsername(e.target.value)}
               className="w-full bg-slate-50 border border-slate-200 rounded-2xl px-6 py-4 outline-none focus:ring-4 focus:ring-[#7ce7b7]/20 focus:border-[#7ce7b7] transition-all text-lg"
             />
