@@ -104,11 +104,11 @@ export default function JoinPage() {
   };
 
   return (
-    <main className="max-h-dvh flex flex-col items-center justify-center bg-[#f8fafc] p-3 sm:p-4 md:p-8 relative overflow-hidden">
+    <main className="min-h-dvh flex flex-col items-center justify-center bg-[#f8fafc] p-3 sm:p-4 md:p-8 relative overflow-hidden">
       {/* Background Glow */}
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-4xl h-64 bg-linear-to-b from-[#7ce7b7]/10 to-transparent blur-3xl -z-10" />
 
-      <div className="w-full max-w-5xl bg-white p-4 sm:p-6 md:p-10 rounded-[1.75rem] sm:rounded-[2.5rem] shadow-xl shadow-slate-200/50 border border-slate-100 transition-all">
+      <div className="w-full max-w-5xl bg-white p-4 sm:p-6 md:p-10 rounded-[1.75rem] sm:rounded-[2.5rem] sm:shadow-none md:shadow-xl shadow-slate-200/50 border border-slate-100 transition-all">
         {/* Header */}
         <div className="flex flex-row justify-between items-center mb-6 sm:mb-8 gap-4 p-3">
           <div>
