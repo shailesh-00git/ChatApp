@@ -10,7 +10,7 @@ export default function Home() {
       {/* HEADER / LOGO SECTION */}
       <div className="mb-12 text-center animate-in fade-in slide-in-from-top-4 duration-700">
         <h1 className="text-5xl md:text-6xl font-black tracking-tight text-slate-900">
-          Chat<span className="text-[#4ade80]">Off</span>
+          the<span className="text-[#4ade80]">chatly</span>
         </h1>
         <p className="text-slate-500 mt-3 text-lg font-medium">
           Simple. Secure. Instant disposal rooms.

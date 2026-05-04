@@ -15,6 +15,15 @@ export default function JoinPage() {
   const [currentUser, setCurrentUser] = useState(null);
   const router = useRouter();
 
+  const ROOM_COLORS = [
+    "from-amber-50 to-amber-100/50 text-amber-700 border-amber-200",
+    "from-sky-50 to-sky-100/50 text-sky-700 border-sky-200",
+    "from-emerald-50 to-emerald-100/50 text-emerald-700 border-emerald-200",
+    "from-rose-50 to-rose-100/50 text-rose-700 border-rose-200",
+    "from-violet-50 to-violet-100/50 text-violet-700 border-violet-200",
+    "from-orange-50 to-orange-100/50 text-orange-700 border-orange-200",
+  ];
+
   // Read username from localStorage after mount
   useEffect(() => {
     const stored = localStorage.getItem("chat_username");
@@ -35,30 +44,6 @@ export default function JoinPage() {
     };
     fetchRooms();
   }, []);
-
-  // ── Room card click ──
-  const handleRoomClick = (room) => {
-    // Always read fresh at click time
-    const user = localStorage.getItem("chat_username");
-
-    console.log("👤 currentUser:", user);
-    console.log("🏠 room.created_by:", room.created_by);
-
-    if (!user) {
-      // No username yet → show username step
-      setSelectedRoom(room);
-      return;
-    }
-
-    if (user === room.created_by) {
-      // Creator → enter directly
-      toast.success(`Welcome back to ${room.name}!`);
-      router.push(`/room/${room.id}`);
-    } else {
-      // Not creator → block
-      toast.error("Only the room creator can join directly. Use a room code.");
-    }
-  };
 
   // ── Verify code ──
   const handleVerifyCode = async (e) => {
@@ -168,46 +153,17 @@ export default function JoinPage() {
                 </div>
               </div>
             ) : rooms.length > 0 ? (
-              <div className="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-6">
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
                 {rooms.map((room, index) => {
-                  const colors = [
-                    "from-amber-50 to-amber-100/50 text-amber-700 border-amber-200",
-                    "from-sky-50 to-sky-100/50 text-sky-700 border-sky-200",
-                    "from-emerald-50 to-emerald-100/50 text-emerald-700 border-emerald-200",
-                    "from-rose-50 to-rose-100/50 text-rose-700 border-rose-200",
-                  ];
-
-                  const isCreator =
-                    currentUser &&
-                    room.created_by &&
-                    currentUser === room.created_by;
-
                   return (
                     <div
                       key={room.id}
-                      onClick={() => handleRoomClick(room)}
-                      className={`relative p-4 sm:p-6 rounded-2xl sm:rounded-3xl border bg-linear-to-br transition-all hover:shadow-md cursor-pointer select-none active:scale-95 ${
-                        colors[index % colors.length]
-                      } ${isCreator ? "ring-2 ring-[#7ce7b7] ring-offset-1" : ""}`}
+                      className={`p-5 rounded-2xl border-l-4 bg-linear-to-br  ${
+                        ROOM_COLORS[index % ROOM_COLORS.length]
+                      }`}
                     >
-                      {/* Creator badge */}
-                      {isCreator && (
-                        <span className="absolute top-2 right-2 sm:top-3 sm:right-3 text-[8px] sm:text-[9px] font-black uppercase tracking-widest bg-[#7ce7b7] text-slate-700 px-1.5 py-0.5 rounded-full shadow-sm">
-                          Your Room
-                        </span>
-                      )}
-
-                      <div className="bg-white/50 w-8 h-8 sm:w-10 sm:h-10 rounded-xl flex items-center justify-center mb-2 sm:mb-3 shadow-sm">
-                        <span className="text-sm sm:text-lg font-bold">#</span>
-                      </div>
-
-                      <h3 className="font-bold text-sm sm:text-lg truncate mb-1 pr-12">
-                        {room.name}
-                      </h3>
-
-                      <p className="text-[9px] sm:text-[10px] font-bold uppercase tracking-widest opacity-60">
-                        {isCreator ? "✓ Tap to Enter" : "Code Required"}
-                      </p>
+                      <h3 className="font-bold">{room.name}</h3>
+                      <p className="text-xs mt-1 text-slate-700">Join using code only</p>
                     </div>
                   );
                 })}
